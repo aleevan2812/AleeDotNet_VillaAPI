@@ -12,10 +12,19 @@ namespace Alee_VillaAPI.Controllers;
 [ApiController]
 public class VillaAPIController : ControllerBase // dont need Controller Class
 {
+    private readonly ILogger<VillaAPIController> _logger;
+
+    public VillaAPIController(ILogger<VillaAPIController> logger)
+    {
+        _logger = logger;
+    }
+    
+    
     [HttpGet] // fix err: Failed to load API definition
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IEnumerable<VillaDTO>> GetVillas()
     {
+        _logger.LogInformation(("Getting all villas"));
         return Ok(VillaStore.villaList);
     }
 
@@ -29,7 +38,10 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     public ActionResult<VillaDTO> GetVilla(int id)
     {
         if (id == 0)
+        {
+            _logger.LogError("Get Villa Error with Id: " + id);
             return BadRequest();
+        }
         var villas = VillaStore.villaList.FirstOrDefault(u => u.Id == id);
 
         if (villas == null)
