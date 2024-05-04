@@ -34,3 +34,4 @@ D:\DOTNET\AleeDotNet_VillaAPI\AleeDotNet_VillaAPI\obj\Debug\net8.0\refint\AleeDo
 D:\DOTNET\AleeDotNet_VillaAPI\AleeDotNet_VillaAPI\obj\Debug\net8.0\AleeDotNet_VillaAPI.pdb
 D:\DOTNET\AleeDotNet_VillaAPI\AleeDotNet_VillaAPI\obj\Debug\net8.0\AleeDotNet_VillaAPI.genruntimeconfig.cache
 D:\DOTNET\AleeDotNet_VillaAPI\AleeDotNet_VillaAPI\obj\Debug\net8.0\ref\AleeDotNet_VillaAPI.dll
+D:\DOTNET\AleeDotNet_VillaAPI\AleeDotNet_VillaAPI\obj\Debug\net8.0\AleeDotNet_VillaAPI.sourcelink.json
