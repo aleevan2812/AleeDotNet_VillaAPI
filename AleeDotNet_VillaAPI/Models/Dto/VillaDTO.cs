@@ -13,5 +13,6 @@ public class VillaDTO
 
     public int Occupancy { get; set; }
     public int Sqft { get; set; } // square feet^2
-    
+    public string ImageUrl { get; set; }
+    public string Amenity { get; set; }
 }
