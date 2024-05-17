@@ -1,6 +1,7 @@
 using Alee_VillaAPI.Data;
 using Alee_VillaAPI.Models;
 using Alee_VillaAPI.Models.Dto;
+using AleeDotNet_VillaAPI.Logging;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 
@@ -12,9 +13,16 @@ namespace Alee_VillaAPI.Controllers;
 [ApiController]
 public class VillaAPIController : ControllerBase // dont need Controller Class
 {
-    private readonly ILogger<VillaAPIController> _logger;
+    // private readonly ILogger<VillaAPIController> _logger;
+    // // logger for logging in the console windows
+    // public VillaAPIController(ILogger<VillaAPIController> logger)
+    // {
+    //     _logger = logger;
+    // }
 
-    public VillaAPIController(ILogger<VillaAPIController> logger)
+    private readonly ILogging _logger;
+
+    public VillaAPIController(ILogging logger)
     {
         _logger = logger;
     }
@@ -24,7 +32,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IEnumerable<VillaDTO>> GetVillas()
     {
-        _logger.LogInformation(("Getting all villas"));
+        _logger.Log(("Getting all villas"), "");
         return Ok(VillaStore.villaList);
     }
 
@@ -39,7 +47,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     {
         if (id == 0)
         {
-            _logger.LogError("Get Villa Error with Id: " + id);
+            _logger.Log("Get Villa Error with Id: = " + id, "error");
             return BadRequest();
         }
         var villas = VillaStore.villaList.FirstOrDefault(u => u.Id == id);
