@@ -3,6 +3,7 @@ using Alee_VillaAPI.Models;
 using Alee_VillaAPI.Models.Dto;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 
 namespace Alee_VillaAPI.Controllers;
@@ -25,8 +26,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     {
         _db = db;
     }
-    
-    
+
+
     [HttpGet] // fix err: Failed to load API definition
     [ProducesResponseType(StatusCodes.Status200OK)]
     public ActionResult<IEnumerable<VillaDTO>> GetVillas()
@@ -47,6 +48,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             return BadRequest();
         }
+
         var villas = _db.Villas.FirstOrDefault(u => u.Id == id);
 
         if (villas == null)
@@ -82,13 +84,12 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             Id = villaDTO.Id,
             Name = villaDTO.Name,
-
+            Details = villaDTO.Details,
             Rate = villaDTO.Rate,
             Sqft = villaDTO.Sqft,
             Occupancy = villaDTO.Occupancy,
             ImageUrl = villaDTO.ImageUrl,
-            Amenity = villaDTO.Amenity,
-
+            Amenity = villaDTO.Amenity
         };
 
         _db.Villas.Add(villa);
@@ -124,18 +125,17 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         // villa.Name = villaDTO.Name;
         // villa.Occupancy = villaDTO.Occupancy;
         // villa.Sqft = villaDTO.Sqft;
-        
+
         Villa villa = new Villa
         {
             Id = villaDTO.Id,
             Name = villaDTO.Name,
-
+            Details = villaDTO.Details,
             Rate = villaDTO.Rate,
             Sqft = villaDTO.Sqft,
             Occupancy = villaDTO.Occupancy,
             ImageUrl = villaDTO.ImageUrl,
-            Amenity = villaDTO.Amenity,
-
+            Amenity = villaDTO.Amenity
         };
         _db.Villas.Update(villa);
         _db.SaveChanges();
@@ -149,34 +149,37 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     {
         if (patchDTO == null || id == 0)
             return BadRequest();
-        var villa = _db.Villas.FirstOrDefault(u => u.Id == id);
-        
+        var villa = _db.Villas.AsNoTracking().FirstOrDefault(u => u.Id == id);
+
         VillaDTO villaDTO = new VillaDTO()
-        { Id = villa.Id, Name = villa.Name, Rate = villa.Rate, Sqft = villa.Sqft,
+        {
+            Id = villa.Id, Name = villa.Name,
+            Details = villa.Details,
+            Rate = villa.Rate, Sqft = villa.Sqft,
             Occupancy = villa.Occupancy,
             ImageUrl = villa.ImageUrl,
             Amenity = villa.Amenity
         };
-        
+
         if (villa == null)
             return BadRequest();
         patchDTO.ApplyTo(villaDTO, ModelState);
-        
+
         Villa model = new Villa
         {
             Id = villaDTO.Id,
             Name = villaDTO.Name,
-
+            Details = villaDTO.Details,
             Rate = villaDTO.Rate,
             Sqft = villaDTO.Sqft,
             Occupancy = villaDTO.Occupancy,
             ImageUrl = villaDTO.ImageUrl,
-            Amenity = villaDTO.Amenity,
+            Amenity = villaDTO.Amenity
         };
-        
+
         _db.Villas.Update(model);
         _db.SaveChanges();
-        
+
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
 
