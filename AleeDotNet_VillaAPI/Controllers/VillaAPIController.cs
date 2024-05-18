@@ -1,6 +1,7 @@
 using Alee_VillaAPI.Data;
 using Alee_VillaAPI.Models;
 using Alee_VillaAPI.Models.Dto;
+using AleeDotNet_VillaAPI.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -20,12 +21,13 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 	//     _logger = logger;
 	// }
 
-	private readonly ApplicationDbContext _db;
+	// private readonly ApplicationDbContext _db;
+	private readonly IVillaRepository _dbVilla;
 	private readonly IMapper _mapper;
 
-	public VillaAPIController(ApplicationDbContext db, IMapper mapper)
+	public VillaAPIController(IVillaRepository dbVilla, IMapper mapper)
 	{
-		_db = db;
+		_dbVilla = dbVilla;
 		_mapper = mapper;
 	}
 
@@ -33,7 +35,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 	[ProducesResponseType(StatusCodes.Status200OK)]
 	public async Task<ActionResult<IEnumerable<VillaDTO>>> GetVillas()
 	{
-		var villas = await _db.Villas.ToListAsync();
+		var villas = await _dbVilla.GetAllAsync();
 		return Ok(_mapper.Map<IEnumerable<VillaDTO>>(villas));
 	}
 
@@ -45,7 +47,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 	{
 		if (id == 0) return BadRequest();
 
-		var villas = await _db.Villas.FirstOrDefaultAsync(u => u.Id == id);
+		var villas = await _dbVilla.GetAsync(u => u.Id == id);
 
 		if (villas == null)
 			return NotFound();
@@ -65,7 +67,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 		//     return BadRequest(ModelState);
 		// }
 
-		if (await _db.Villas.FirstOrDefaultAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
+		if (await _dbVilla.GetAsync(u => u.Name.ToLower() == createDTO.Name.ToLower()) != null)
 		{
 			ModelState.AddModelError("CustomError", "Villa  already Exists!");
 			return BadRequest(ModelState);
@@ -89,8 +91,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 		// };
 		var model = _mapper.Map<Villa>(createDTO);
 
-		await _db.Villas.AddAsync(model);
-		await _db.SaveChangesAsync();
+		await _dbVilla.CreateAsync(model);
+		await _dbVilla.SaveAsync();
 
 		return CreatedAtRoute("GetVilla", new { id = model.Id }, model);
 	}
@@ -103,11 +105,11 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 	{
 		if (id == 0)
 			return BadRequest();
-		var villa = await _db.Villas.FirstOrDefaultAsync(u => u.Id == id);
+		var villa = await _dbVilla.GetAsync(u => u.Id == id);
 		if (villa == null)
 			return NotFound();
-		_db.Villas.Remove(villa);
-		await _db.SaveChangesAsync();
+		await _dbVilla.RemoveAsync(villa);
+		await _dbVilla.SaveAsync();
 		return NoContent();
 	}
 
@@ -137,8 +139,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 		// };
 		var villa = _mapper.Map<Villa>(updateDTO);
 
-		_db.Villas.Update(villa);
-		await _db.SaveChangesAsync();
+		await _dbVilla.UpdateAsync(villa);
+		await _dbVilla.SaveAsync();
 		return NoContent();
 	}
 
@@ -149,7 +151,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 	{
 		if (patchDTO == null || id == 0)
 			return BadRequest();
-		var villa = await _db.Villas.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
+		var villa = await _dbVilla.GetAsync((u => u.Id == id), tracked: false);
 
 		// var villaDTO = new VillaUpdateDTO()
 		// {
@@ -179,8 +181,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 		// };
 		var model = _mapper.Map<Villa>(villaDTO);
 
-		_db.Villas.Update(model);
-		await _db.SaveChangesAsync();
+		await _dbVilla.UpdateAsync(model);
+		await _dbVilla.SaveAsync();
 
 		if (!ModelState.IsValid)
 			return BadRequest(ModelState);

@@ -1,5 +1,7 @@
 using Alee_VillaAPI.Data;
 using AleeDotNet_VillaAPI;
+using AleeDotNet_VillaAPI.Repository;
+using AleeDotNet_VillaAPI.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -7,6 +9,7 @@ var builder = WebApplication.CreateBuilder(args);
 // Add services to the container.
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
 	options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+builder.Services.AddScoped<IVillaRepository, VillaRepository>();
 builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 // AddNewtonsoftJson() is used for MVC.NewtonsoftJson package
