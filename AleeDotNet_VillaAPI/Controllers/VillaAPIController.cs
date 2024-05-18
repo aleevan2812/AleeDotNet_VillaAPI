@@ -29,9 +29,9 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 
     [HttpGet] // fix err: Failed to load API definition
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public ActionResult<IEnumerable<VillaDTO>> GetVillas()
+    public async Task<ActionResult<IEnumerable<VillaDTO>>> GetVillas()
     {
-        return Ok(_db.Villas.ToList());
+        return Ok(await _db.Villas.ToListAsync());
     }
 
     [HttpGet("{id:int}", Name = "GetVilla")] // if dont define HTTP Verb, it defaults to "HttpGet"
@@ -41,11 +41,11 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     // [ProducesResponseType(200, Type = typeof(VillaDTO))] // for Ok
     // [ProducesResponseType(404)] // NotFound
     // [ProducesResponseType(400)] // BadRequest
-    public ActionResult<VillaDTO> GetVilla(int id)
+    public async Task<ActionResult<VillaDTO>> GetVilla(int id)
     {
         if (id == 0) return BadRequest();
 
-        var villas = _db.Villas.FirstOrDefault(u => u.Id == id);
+        var villas = await _db.Villas.FirstOrDefaultAsync(u => u.Id == id);
 
         if (villas == null)
             return NotFound();
@@ -57,7 +57,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<VillaDTO> CreateVilla([FromBody] VillaCreateDTO villaDTO)
+    public async Task<ActionResult<VillaDTO>> CreateVilla([FromBody] VillaCreateDTO villaDTO)
     {
         // The [ApiController] attribute makes model validation errors automatically trigger an HTTP 400 response. Consequently, the following code is unnecessary
         // if (!ModelState.IsValid)
@@ -65,7 +65,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         //     return BadRequest(ModelState);
         // }
 
-        if (_db.Villas.FirstOrDefault(u => u.Name.ToLower() == villaDTO.Name.ToLower()) != null)
+        if (await _db.Villas.FirstOrDefaultAsync(u => u.Name.ToLower() == villaDTO.Name.ToLower()) != null)
         {
             ModelState.AddModelError("CustomError", "Villa  already Exists!");
             return BadRequest(ModelState);
@@ -88,8 +88,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
             Amenity = villaDTO.Amenity
         };
 
-        _db.Villas.Add(model);
-        _db.SaveChanges();
+        await _db.Villas.AddAsync(model);
+        await _db.SaveChangesAsync();
 
         return CreatedAtRoute("GetVilla", new { id = model.Id }, model);
     }
@@ -98,21 +98,22 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpDelete("{id:int}", Name = "DeleteVilla")]
-    public IActionResult DeleteVilla(int id) // use IActionResult since don't need to define return TYPE
+    public async Task<IActionResult> DeleteVilla(int id) // use IActionResult since don't need to define return TYPE
     {
         if (id == 0)
             return BadRequest();
-        var villa = _db.Villas.FirstOrDefault(u => u.Id == id);
+        var villa = await _db.Villas.FirstOrDefaultAsync(u => u.Id == id);
         if (villa == null)
             return NotFound();
         _db.Villas.Remove(villa);
+        await _db.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpPut("{id:int}", Name = "UpdateVilla")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult UpdateVilla(int id, [FromBody] VillaUpdateDTO villaDTO)
+    public async Task<IActionResult> UpdateVilla(int id, [FromBody] VillaUpdateDTO villaDTO)
     {
         if (villaDTO == null || id != villaDTO.Id)
             return BadRequest();
@@ -134,18 +135,18 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
             Amenity = villaDTO.Amenity
         };
         _db.Villas.Update(villa);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
         return NoContent();
     }
 
     [HttpPatch("{id:int}", Name = "UpdatePartialVilla")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public IActionResult UpdatePartialVilla(int id, JsonPatchDocument<VillaUpdateDTO> patchDTO)
+    public async Task<IActionResult> UpdatePartialVilla(int id, JsonPatchDocument<VillaUpdateDTO> patchDTO)
     {
         if (patchDTO == null || id == 0)
             return BadRequest();
-        var villa = _db.Villas.AsNoTracking().FirstOrDefault(u => u.Id == id);
+        var villa = await _db.Villas.AsNoTracking().FirstOrDefaultAsync(u => u.Id == id);
 
         var villaDTO = new VillaUpdateDTO()
         {
@@ -174,7 +175,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         };
 
         _db.Villas.Update(model);
-        _db.SaveChanges();
+        await _db.SaveChangesAsync();
 
         if (!ModelState.IsValid)
             return BadRequest(ModelState);
