@@ -9,7 +9,8 @@ namespace AleeDotNet_VillaAPI.Repository;
 public class VillaRepository : Repository<Villa>, IVillaRepository
 {
     private readonly ApplicationDbContext _db;
-    public VillaRepository(ApplicationDbContext db): base(db)
+
+    public VillaRepository(ApplicationDbContext db) : base(db)
     {
         _db = db;
     }

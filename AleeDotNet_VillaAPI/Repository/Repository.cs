@@ -13,7 +13,7 @@ public class Repository<T> : IRepository<T> where T : class
     public Repository(ApplicationDbContext db)
     {
         _db = db;
-        this.dbSet = _db.Set<T>();
+        dbSet = _db.Set<T>();
     }
 
     public async Task CreateAsync(T entity)
@@ -25,15 +25,9 @@ public class Repository<T> : IRepository<T> where T : class
     public async Task<T> GetAsync(Expression<Func<T, bool>> filter = null, bool tracked = true)
     {
         IQueryable<T> query = dbSet;
-        if (!tracked)
-        {
-            query = query.AsNoTracking();
-        }
+        if (!tracked) query = query.AsNoTracking();
 
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
+        if (filter != null) query = query.Where(filter);
 
         return await query.FirstOrDefaultAsync();
     }
@@ -42,10 +36,7 @@ public class Repository<T> : IRepository<T> where T : class
     {
         IQueryable<T> query = dbSet;
 
-        if (filter != null)
-        {
-            query = query.Where(filter);
-        }
+        if (filter != null) query = query.Where(filter);
 
         return await query.ToListAsync();
     }
