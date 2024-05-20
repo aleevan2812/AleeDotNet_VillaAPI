@@ -6,7 +6,7 @@ namespace Alee_VillaAPI.Models;
 public class VillaNumber
 {
     [Key]
-    [DatabaseGenerated(DatabaseGeneratedOption.None)]
+    [DatabaseGenerated(DatabaseGeneratedOption.None)] // disable value generation that has been set up by convention. For example, a primary key of type int is usually implicitly configured as value-generated-on-add (e.g. identity column on SQL Server).
     public int VillaNo { get; set; }
 
     [ForeignKey("Villa")]

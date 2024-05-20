@@ -24,13 +24,15 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
     // private readonly ApplicationDbContext _db;
     protected APIResponse _response;
     private readonly IVillaNumberRepository _dbVillaNumber;
+    private readonly IVillaRepository _dbVilla;
     private readonly IMapper _mapper;
 
-    public VillaNumberAPIController(IVillaNumberRepository dbVillaNumber, IMapper mapper)
+    public VillaNumberAPIController(IVillaNumberRepository dbVillaNumber, IMapper mapper, IVillaRepository dbVilla)
     {
         _dbVillaNumber = dbVillaNumber;
         _mapper = mapper;
         _response = new APIResponse();
+        _dbVilla = dbVilla;
     }
 
     [HttpGet] // fix err: Failed to load API definition
@@ -106,6 +108,12 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
             if (await _dbVillaNumber.GetAsync(u => u.VillaNo == createDTO.VillaNo) != null)
             {
                 ModelState.AddModelError("CustomError", "VillaNumber  already Exists!");
+                return BadRequest(ModelState);
+            }
+
+            if (await _dbVilla.GetAsync(u => u.Id == createDTO.VillaID) == null)
+            {
+                ModelState.AddModelError("CustomError", "Villa ID is Invalid!");
                 return BadRequest(ModelState);
             }
 
@@ -193,6 +201,12 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         {
             if (updateDTO == null || id != updateDTO.VillaNo)
                 return BadRequest();
+            
+            if (await _dbVilla.GetAsync(u => u.Id == updateDTO.VillaID) == null)
+            {
+                ModelState.AddModelError("CustomError", "Villa ID is Invalid!");
+                return BadRequest(ModelState);
+            }
 
             // var VillaNumber = VillaNumberStore.VillaNumberList.FirstOrDefault(u => u.Id == id);
             // VillaNumber.Name = VillaNumberDTO.Name;
@@ -228,6 +242,4 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
-
-    
 }
