@@ -1,6 +1,6 @@
 using System.Net;
 
-namespace AleeDotNet_VillaWeb.Models;
+namespace Villa_Web.Models;
 
 public class APIResponse
 {

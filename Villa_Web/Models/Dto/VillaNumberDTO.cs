@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AleeDotNet_VillaWeb.Models.Dto;
+namespace Villa_Web.Models.Dto;
 
 public class VillaNumberDTO
 {

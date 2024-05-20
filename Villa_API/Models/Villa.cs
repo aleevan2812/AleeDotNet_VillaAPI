@@ -1,7 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
-namespace Alee_VillaAPI.Models;
+namespace Villa_API.Models;
 
 public class Villa
 {

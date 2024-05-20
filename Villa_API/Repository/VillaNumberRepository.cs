@@ -1,5 +1,5 @@
-using Alee_VillaAPI.Data;
-using Alee_VillaAPI.Models;
+using Villa_API.Data;
+using Villa_API.Models;
 using Villa_API.Repository;
 using Villa_API.Repository.IRepository;
 

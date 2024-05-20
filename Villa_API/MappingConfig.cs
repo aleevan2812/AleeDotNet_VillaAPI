@@ -1,5 +1,5 @@
-using Alee_VillaAPI.Models;
-using Alee_VillaAPI.Models.Dto;
+using Villa_API.Models;
+using Villa_API.Models.Dto;
 using AutoMapper;
 
 namespace Villa_API;

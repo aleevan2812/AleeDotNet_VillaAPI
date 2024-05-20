@@ -1,4 +1,4 @@
-namespace AleeDotNet_VillaWeb.Models;
+namespace Villa_Web.Models;
 
 public class ErrorViewModel
 {

@@ -1,17 +1,17 @@
 using System.Net;
-using Alee_VillaAPI.Data;
-using Alee_VillaAPI.Models;
-using Alee_VillaAPI.Models.Dto;
+using Villa_API.Data;
+using Villa_API.Models;
+using Villa_API.Models.Dto;
 using Villa_API.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
-namespace Alee_VillaAPI.Controllers;
+namespace Villa_API.Controllers;
 
 // [Route("api/[controller]")] can use this
-[Route("api/VillaAPI")] // fix err: Action 'Alee_VillaAPI.Controllers.VillaAPIController.GetVillas (Alee_VillaAPI)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
+[Route("api/VillaAPI")] // fix err: Action 'Villa_API.Controllers.VillaAPIController.GetVillas (Villa_API)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
 [ApiController]
 public class VillaAPIController : ControllerBase // dont need Controller Class
 {

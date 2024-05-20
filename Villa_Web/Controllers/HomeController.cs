@@ -1,8 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using AleeDotNet_VillaWeb.Models;
+using Villa_Web.Models;
 
-namespace AleeDotNet_VillaWeb.Controllers;
+namespace Villa_Web.Controllers;
 
 public class HomeController : Controller
 {

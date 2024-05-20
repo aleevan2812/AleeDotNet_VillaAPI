@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace AleeDotNet_VillaWeb.Models.Dto;
+namespace Villa_Web.Models.Dto;
 
 // DTOs provide a wrapper between the entity or the database model and what is being exposed from the API
 public class VillaUpdateDTO

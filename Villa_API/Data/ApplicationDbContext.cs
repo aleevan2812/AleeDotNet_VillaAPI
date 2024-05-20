@@ -1,7 +1,7 @@
-using Alee_VillaAPI.Models;
+using Villa_API.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace Alee_VillaAPI.Data;
+namespace Villa_API.Data;
 
 public class ApplicationDbContext : DbContext
 {
