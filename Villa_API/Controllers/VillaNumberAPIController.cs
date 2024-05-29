@@ -41,8 +41,8 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
     {
         try
         {
-            IEnumerable<VillaNumber> VillaNumberList = await _dbVillaNumber.GetAllAsync();
-            _response.Result = _mapper.Map<List<VillaNumberDTO>>(VillaNumberList);
+            IEnumerable<VillaNumber> villaNumberList = await _dbVillaNumber.GetAllAsync(includeProperties: "Villa");
+            _response.Result = _mapper.Map<List<VillaNumberDTO>>(villaNumberList);
             _response.StatusCode = HttpStatusCode.OK;
             return Ok(_response);
         }
