@@ -1,5 +1,5 @@
 @model IEnumerable<Villa_Web.Models.Dto.VillaDTO>
-<br />
+<br/>
 <div class="container p-4 border">
     <div class="row pb-2">
         <div class="col">
@@ -26,14 +26,19 @@
         </tr>
         </thead>
         <tbody>
-        @foreach(var item in Model){
+        @foreach (var item in Model)
+        {
             <tr>
                 <td>@item.Name</td>
                 <td>@item.Occupancy</td>
-                <td>@((item.Rate).ToString("c"))</td>
+                <td>@item.Rate.ToString("c")</td>
                 <td>
-                    <a asp-controller="Villa" asp-action="UpdateVilla" class="btn btn-success"><i class="bi bi-pencil-square"></i></a>
-                    <a asp-controller="Villa" asp-action="DeleteVilla" class="btn btn-danger"><i class="bi bi-trash-fill"></i></a>
+                    <a asp-controller="Villa" asp-action="UpdateVilla" asp-route-villaId="@item.Id" class="btn btn-success">
+                        <i class="bi bi-pencil-square"></i>
+                    </a>
+                    <a asp-controller="Villa" asp-action="DeleteVilla" asp-route-villaId="@item.Id" class="btn btn-danger">
+                        <i class="bi bi-trash-fill"></i>
+                    </a>
                 </td>
             </tr>
         }
