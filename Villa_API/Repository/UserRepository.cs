@@ -33,7 +33,14 @@ public class UserRepository : IUserRepository
         var user = _db.LocalUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDTO.UserName.ToLower()
                                                       && u.Password == loginRequestDTO.Password);
 
-        if (user == null) return null;
+        if (user == null)
+        {
+            return new LoginResponseDTO()
+            {
+                Token = "",
+                User = null
+            };
+        }
 
         /* if user was found generate JWT Token */
         var tokenHandler = new JwtSecurityTokenHandler();
