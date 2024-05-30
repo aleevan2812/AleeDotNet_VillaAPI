@@ -34,7 +34,7 @@ public class VillaNumberController : Controller
 
         return View(list);
     }
-    
+
     public async Task<IActionResult> CreateVillaNumber()
     {
         VillaNumberCreateVM villaNumberVM = new();
@@ -46,8 +46,10 @@ public class VillaNumberController : Controller
             {
                 Text = i.Name,
                 Value = i.Id.ToString()
-            }); ;
+            });
+            ;
         }
+
         return View(villaNumberVM);
     }
 
@@ -57,13 +59,25 @@ public class VillaNumberController : Controller
     {
         if (ModelState.IsValid)
         {
-
             var response = await _villaNumberService.CreateAsync<APIResponse>(model.VillaNumber);
             if (response != null && response.IsSuccess)
             {
                 return RedirectToAction(nameof(IndexVillaNumber));
             }
+
+            var resp = await _villaService.GetAllAsync<APIResponse>();
+            if (resp != null && resp.IsSuccess)
+            {
+                model.VillaList = JsonConvert.DeserializeObject<List<VillaDTO>>
+                    (Convert.ToString(resp.Result)).Select(i => new SelectListItem
+                {
+                    Text = i.Name,
+                    Value = i.Id.ToString()
+                });
+                ;
+            }
         }
+
         return View(model);
     }
 }

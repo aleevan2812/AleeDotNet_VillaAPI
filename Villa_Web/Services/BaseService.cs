@@ -54,6 +54,27 @@ public class BaseService : IBaseService
 
             // Chức năng: Đọc nội dung của phản hồi HTTP (apiResponse) dưới dạng một chuỗi không đồng bộ.
             var apiContent = await apiResponse.Content.ReadAsStringAsync();
+            
+            try
+            {
+                // Chuyển đổi chuỗi JSON apiContent thành một đối tượng thuộc kiểu APIResponse.
+                APIResponse ApiResponse = JsonConvert.DeserializeObject<APIResponse>(apiContent);
+                if(apiResponse.StatusCode==System.Net.HttpStatusCode.BadRequest 
+                   || apiResponse.StatusCode == System.Net.HttpStatusCode.NotFound)
+                {
+                    ApiResponse.StatusCode = System.Net.HttpStatusCode.BadRequest;
+                    ApiResponse.IsSuccess = false;
+                    var res = JsonConvert.SerializeObject(ApiResponse);
+                    var returnObj = JsonConvert.DeserializeObject<T>(res);
+                    return returnObj;
+                }
+            }
+            catch (Exception e)
+            {
+                var exceptionResponse = JsonConvert.DeserializeObject<T>(apiContent);
+                return exceptionResponse;
+            }
+            
             // Chuyển đổi chuỗi JSON apiContent thành một đối tượng thuộc kiểu T.
             var APIResponse = JsonConvert.DeserializeObject<T>(apiContent);
             return APIResponse;
