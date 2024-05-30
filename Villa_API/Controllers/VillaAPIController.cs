@@ -4,6 +4,7 @@ using Villa_API.Models;
 using Villa_API.Models.Dto;
 using Villa_API.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -35,6 +36,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     }
 
     [HttpGet] // fix err: Failed to load API definition
+    [Authorize]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillas()
     {
@@ -56,6 +58,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     }
 
     [HttpGet("{id:int}", Name = "GetVilla")] // if dont define HTTP Verb, it defaults to "HttpGet"
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -145,6 +148,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         // return CreatedAtRoute("GetVilla", new { id = model.Id }, model);
     }
 
+    [Authorize(Roles = "CUSTOM")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
