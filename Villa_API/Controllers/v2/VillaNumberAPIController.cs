@@ -12,7 +12,7 @@ namespace Alee_VillaNumberAPI.Controllers.v2;
 // [Route("api/VillaNumberAPI")] // fix err: Action 'Alee_VillaNumberAPI.Controllers.VillaNumberAPIController.GetVillaNumbers (Alee_VillaNumberAPI)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
 [Route("api/v{version:apiVersion}/VillaNumberAPI")]
 [ApiController]
-[ApiVersion("2.0")]
+[ApiVersion("2.0", Deprecated = true)] // lỗi thời :)
 public class VillaNumberAPIController : ControllerBase // dont need Controller Class
 {
     private readonly IVillaRepository _dbVilla;
@@ -37,10 +37,10 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         _dbVilla = dbVilla;
     }
 
-    [HttpGet]
+    [HttpGet("GetString")]
     // [MapToApiVersion("2.0")]
     public IEnumerable<string> Get()
     {
-        return new string[] { "value1", "value2" };
+        return new string[] { "GetString in V2 version", "This is V2" };
     }
 }

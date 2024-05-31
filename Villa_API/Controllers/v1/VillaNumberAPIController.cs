@@ -36,6 +36,12 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         _response = new APIResponse();
         _dbVilla = dbVilla;
     }
+    
+    [HttpGet("GetString")]
+    public IEnumerable<string> Get()
+    {
+        return new string[] { "GetString in V1 version", "This is V1" };
+    }
 
     [HttpGet] // fix err: Failed to load API definition
     // [MapToApiVersion("1.0")]
