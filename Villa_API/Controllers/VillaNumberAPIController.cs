@@ -11,6 +11,7 @@ namespace Alee_VillaNumberAPI.Controllers;
 // [Route("api/[controller]")] can use this
 [Route("api/VillaNumberAPI")] // fix err: Action 'Alee_VillaNumberAPI.Controllers.VillaNumberAPIController.GetVillaNumbers (Alee_VillaNumberAPI)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
 [ApiController]
+[ApiVersion("1.0")]
 public class VillaNumberAPIController : ControllerBase // dont need Controller Class
 {
     private readonly IVillaRepository _dbVilla;
