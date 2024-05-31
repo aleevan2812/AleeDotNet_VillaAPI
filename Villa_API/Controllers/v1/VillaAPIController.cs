@@ -44,7 +44,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillas([FromQuery(Name = "filterOccupancy")] int? occupancy,
-        [FromQuery] string? search, int pageSize = 2, int pageNumber = 1)
+        [FromQuery] string? search, int pageSize = 0, int pageNumber = 1)
     {
         try
         {
