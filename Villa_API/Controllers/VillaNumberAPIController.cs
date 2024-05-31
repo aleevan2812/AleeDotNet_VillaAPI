@@ -1,11 +1,10 @@
 using System.Net;
+using AutoMapper;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Villa_API.Models;
 using Villa_API.Models.Dto;
 using Villa_API.Repository.IRepository;
-using AutoMapper;
-using Microsoft.AspNetCore.JsonPatch;
-using Microsoft.AspNetCore.Mvc;
-
 
 namespace Alee_VillaNumberAPI.Controllers;
 
@@ -14,6 +13,10 @@ namespace Alee_VillaNumberAPI.Controllers;
 [ApiController]
 public class VillaNumberAPIController : ControllerBase // dont need Controller Class
 {
+    private readonly IVillaRepository _dbVilla;
+    private readonly IVillaNumberRepository _dbVillaNumber;
+
+    private readonly IMapper _mapper;
     // private readonly ILogger<VillaNumberAPIController> _logger;
     // // logger for logging in the console windows
     // public VillaNumberAPIController(ILogger<VillaNumberAPIController> logger)
@@ -23,9 +26,6 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
 
     // private readonly ApplicationDbContext _db;
     protected APIResponse _response;
-    private readonly IVillaNumberRepository _dbVillaNumber;
-    private readonly IVillaRepository _dbVilla;
-    private readonly IMapper _mapper;
 
     public VillaNumberAPIController(IVillaNumberRepository dbVillaNumber, IMapper mapper, IVillaRepository dbVilla)
     {
@@ -50,7 +50,7 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
@@ -85,12 +85,13 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
 
+    [Authorize(Roles = "admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status201Created)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -145,18 +146,19 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
         // return CreatedAtRoute("GetVillaNumber", new { id = model.Id }, model);
     }
 
+    [Authorize(Roles = "admin")]
+    [HttpDelete("{id:int}", Name = "DeleteVillaNumber")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    [HttpDelete("{id:int}", Name = "DeleteVillaNumber")]
     public async Task<ActionResult<APIResponse>>
         DeleteVillaNumber(int id) // use IActionResult since don't need to define return TYPE
     {
@@ -185,12 +187,13 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
 
+    [Authorize(Roles = "admin")]
     [HttpPut("{id:int}", Name = "UpdateVillaNumber")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -237,7 +240,7 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'

@@ -1,13 +1,11 @@
 using System.Net;
-using Villa_API.Data;
-using Villa_API.Models;
-using Villa_API.Models.Dto;
-using Villa_API.Repository.IRepository;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
+using Villa_API.Models;
+using Villa_API.Models.Dto;
+using Villa_API.Repository.IRepository;
 
 namespace Villa_API.Controllers;
 
@@ -16,6 +14,9 @@ namespace Villa_API.Controllers;
 [ApiController]
 public class VillaAPIController : ControllerBase // dont need Controller Class
 {
+    private readonly IVillaRepository _dbVilla;
+
+    private readonly IMapper _mapper;
     // private readonly ILogger<VillaAPIController> _logger;
     // // logger for logging in the console windows
     // public VillaAPIController(ILogger<VillaAPIController> logger)
@@ -25,8 +26,6 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 
     // private readonly ApplicationDbContext _db;
     protected APIResponse _response;
-    private readonly IVillaRepository _dbVilla;
-    private readonly IMapper _mapper;
 
     public VillaAPIController(IVillaRepository dbVilla, IMapper mapper)
     {
@@ -36,7 +35,6 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     }
 
     [HttpGet] // fix err: Failed to load API definition
-    [Authorize]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -53,14 +51,13 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
 
     [HttpGet("{id:int}", Name = "GetVilla")] // if dont define HTTP Verb, it defaults to "HttpGet"
-    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -91,12 +88,13 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
 
+    [Authorize(Roles = "admin")]
     [HttpPost]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
@@ -147,14 +145,14 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
         // return CreatedAtRoute("GetVilla", new { id = model.Id }, model);
     }
 
-    [Authorize(Roles = "CUSTOM")]
+    [Authorize(Roles = "admin")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -188,12 +186,13 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
 
+    [Authorize(Roles = "admin")]
     [HttpPut("{id:int}", Name = "UpdateVilla")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -234,7 +233,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
         {
             _response.IsSuccess = false;
             _response.ErrorMessages
-                = new List<string>() { ex.ToString() };
+                = new List<string> { ex.ToString() };
         }
 
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
