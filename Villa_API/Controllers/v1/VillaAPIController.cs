@@ -37,6 +37,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     }
 
     [HttpGet] // fix err: Failed to load API definition
+    [ResponseCache(Duration =30)]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -60,6 +61,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     }
 
     [HttpGet("{id:int}", Name = "GetVilla")] // if dont define HTTP Verb, it defaults to "HttpGet"
+    // [ResponseCache(Location =ResponseCacheLocation.None,NoStore =true)]
+    // bạn đảm bảo rằng phản hồi từ action này sẽ không được lưu trữ ở bất kỳ đâu, đảm bảo rằng mỗi lần client yêu cầu action này, một phản hồi mới sẽ được tạo ra. Điều này thường được sử dụng cho các phản hồi chứa dữ liệu nhạy cảm hoặc dữ liệu mà bạn muốn đảm bảo luôn luôn được cập nhật và không lấy từ bộ nhớ đệm.
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
