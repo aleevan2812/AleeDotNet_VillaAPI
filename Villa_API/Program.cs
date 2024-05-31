@@ -23,8 +23,15 @@ builder.Services.AddAutoMapper(typeof(MappingConfig));
 
 // add versioning to services
 builder.Services.AddApiVersioning(options => {
+    // Thiết lập này giả định rằng phiên bản API mặc định sẽ được sử dụng khi một client không chỉ định phiên bản
     options.AssumeDefaultVersionWhenUnspecified = true;
+    // Thiết lập này xác định phiên bản API mặc định là 1.0.
     options.DefaultApiVersion = new ApiVersion(1, 0);
+});
+builder.Services.AddVersionedApiExplorer(options =>
+{
+    // Thiết lập này định dạng tên nhóm cho các phiên bản API. 'v'VVV sẽ định dạng các phiên bản API dưới dạng "v1", "v2",...
+    options.GroupNameFormat = "'v'VVV";
 });
 
 var key = builder.Configuration.GetValue<string>("ApiSettings:Secret");

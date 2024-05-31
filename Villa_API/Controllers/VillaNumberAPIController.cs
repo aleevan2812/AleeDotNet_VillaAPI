@@ -9,9 +9,11 @@ using Villa_API.Repository.IRepository;
 namespace Alee_VillaNumberAPI.Controllers;
 
 // [Route("api/[controller]")] can use this
-[Route("api/VillaNumberAPI")] // fix err: Action 'Alee_VillaNumberAPI.Controllers.VillaNumberAPIController.GetVillaNumbers (Alee_VillaNumberAPI)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
+// [Route("api/VillaNumberAPI")] // fix err: Action 'Alee_VillaNumberAPI.Controllers.VillaNumberAPIController.GetVillaNumbers (Alee_VillaNumberAPI)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
+[Route("api/v{version:apiVersion}/VillaNumberAPI")]
 [ApiController]
 [ApiVersion("1.0")]
+[ApiVersion("2.0")]
 public class VillaNumberAPIController : ControllerBase // dont need Controller Class
 {
     private readonly IVillaRepository _dbVilla;
@@ -37,6 +39,7 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
     }
 
     [HttpGet] // fix err: Failed to load API definition
+    [MapToApiVersion("1.0")]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillaNumbers()
     {
@@ -57,6 +60,13 @@ public class VillaNumberAPIController : ControllerBase // dont need Controller C
         return _response; // Implicit conversion of 'response' from 'APIResponse' to 'ActionResult<APIResponse>'
     }
 
+    [HttpGet]
+    [MapToApiVersion("2.0")]
+    public IEnumerable<string> Get()
+    {
+        return new string[] { "value1", "value2" };
+    }
+    
     [HttpGet("{id:int}", Name = "GetVillaNumber")] // if dont define HTTP Verb, it defaults to "HttpGet"
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
