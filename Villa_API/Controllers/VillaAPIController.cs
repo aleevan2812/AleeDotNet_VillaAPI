@@ -13,7 +13,6 @@ namespace Villa_API.Controllers;
 // [Route("api/VillaAPI")] // fix err: Action 'Villa_API.Controllers.VillaAPIController.GetVillas (Villa_API)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
 [Route("api/v{version:apiVersion}/VillaAPI")]
 [ApiVersion("1.0")]
-[ApiVersion("2.0")]
 [ApiController]
 public class VillaAPIController : ControllerBase // dont need Controller Class
 {
