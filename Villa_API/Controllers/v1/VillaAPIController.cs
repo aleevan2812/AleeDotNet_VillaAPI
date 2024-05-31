@@ -42,7 +42,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
-    public async Task<ActionResult<APIResponse>> GetVillas([FromQuery(Name = "filterOccupancy")] int? occupancy)
+    public async Task<ActionResult<APIResponse>> GetVillas([FromQuery(Name = "filterOccupancy")] int? occupancy,
+        [FromQuery] string? search)
     {
         try
         {
@@ -52,6 +53,9 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
                 villaList = await _dbVilla.GetAllAsync(u => u.Occupancy == occupancy);
             else
                 villaList = await _dbVilla.GetAllAsync();
+
+            if (!string.IsNullOrEmpty(search))
+                villaList = villaList.Where(u => u.Name.ToLower().Contains(search));
             _response.Result = _mapper.Map<List<VillaDTO>>(villaList);
             _response.StatusCode = HttpStatusCode.OK;
             return Ok(_response);
