@@ -65,6 +65,12 @@ builder.Services.AddAuthentication(x =>
 // AddXmlDataContractSerializerFormatters() is used for supporting XML formating
 builder.Services.AddControllers(option =>
 {
+    option.CacheProfiles.Add("Default30",
+        new CacheProfile
+        {
+            Duration = 30
+        });
+
     // option.ReturnHttpNotAcceptable = true;
     // if a format is not acceptable, return the appropriate error message
 }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();

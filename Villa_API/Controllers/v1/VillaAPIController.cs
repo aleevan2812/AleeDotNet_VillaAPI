@@ -37,7 +37,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     }
 
     [HttpGet] // fix err: Failed to load API definition
-    [ResponseCache(Duration =30)]
+    // [ResponseCache(Duration =30)]
+    [ResponseCache(CacheProfileName = "Default30")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
