@@ -1,4 +1,5 @@
 using System.Net;
+using System.Text.Json;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.JsonPatch;
@@ -43,19 +44,24 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
     public async Task<ActionResult<APIResponse>> GetVillas([FromQuery(Name = "filterOccupancy")] int? occupancy,
-        [FromQuery] string? search)
+        [FromQuery] string? search, int pageSize = 2, int pageNumber = 1)
     {
         try
         {
             // IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
             IEnumerable<Villa> villaList;
             if (occupancy > 0)
-                villaList = await _dbVilla.GetAllAsync(u => u.Occupancy == occupancy);
+                villaList = await _dbVilla.GetAllAsync(u => u.Occupancy == occupancy, pageSize:pageSize,
+                    pageNumber:pageNumber);
             else
-                villaList = await _dbVilla.GetAllAsync();
+                villaList = await _dbVilla.GetAllAsync(pageSize:pageSize,
+                    pageNumber:pageNumber);
 
             if (!string.IsNullOrEmpty(search))
                 villaList = villaList.Where(u => u.Name.ToLower().Contains(search));
+            Pagination pagination = new() { PageNumber = pageNumber, PageSize = pageSize };
+
+            Response.Headers.Add("X-Pagination", JsonSerializer.Serialize(pagination));
             _response.Result = _mapper.Map<List<VillaDTO>>(villaList);
             _response.StatusCode = HttpStatusCode.OK;
             return Ok(_response);
