@@ -9,4 +9,7 @@ public static class SD
         PUT,
         DELETE
     }
+    
+    public const string Admin = "admin";
+    public const string Customer = "customer";
 }
