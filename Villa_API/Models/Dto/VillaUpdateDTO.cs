@@ -12,6 +12,10 @@ public class VillaUpdateDTO
     [Required] public int Occupancy { get; set; }
     [Required] public int Sqft { get; set; } // square feet^2
     [Required] public double Rate { get; set; }
-    [Required] public string ImageUrl { get; set; }
+
+    public string? ImageUrl { get; set; }
+    public string? ImageLocalPath { get; set; }
+    public IFormFile? Image { get; set; }
+
     public string Amenity { get; set; }
 }
