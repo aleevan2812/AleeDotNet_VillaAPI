@@ -48,7 +48,7 @@ public class UserRepository : IUserRepository
         if (user == null || isValid == false)
             return new TokenDTO
             {
-                Token = "",
+                AccessToken = "",
             };
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -78,7 +78,7 @@ public class UserRepository : IUserRepository
         TokenDTO tokenDto = new TokenDTO
         {
             // Viết token thành chuỗi (tokenHandler.WriteToken(token)).
-            Token = tokenHandler.WriteToken(token),
+            AccessToken = tokenHandler.WriteToken(token),
             // Role = roles.FirstOrDefault()
         };
         return tokenDto;
