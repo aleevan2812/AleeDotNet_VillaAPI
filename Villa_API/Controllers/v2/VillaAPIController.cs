@@ -13,7 +13,7 @@ namespace Villa_API.Controllers;
 // [Route("api/[controller]")] can use this
 // [Route("api/VillaAPI")] // fix err: Action 'Villa_API.Controllers.VillaAPIController.GetVillas (Villa_API)' does not have an attribute route. Action methods on controllers annotated with ApiControllerAttribute must be attribute routed.
 [Route("api/v{version:apiVersion}/VillaAPI")]
-[ApiVersion("1.0")]
+[ApiVersion("2.0")]
 [ApiController]
 public class VillaAPIController : ControllerBase // dont need Controller Class
 {
@@ -51,11 +51,11 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
             // IEnumerable<Villa> villaList = await _dbVilla.GetAllAsync();
             IEnumerable<Villa> villaList;
             if (occupancy > 0)
-                villaList = await _dbVilla.GetAllAsync(u => u.Occupancy == occupancy, pageSize:pageSize,
-                    pageNumber:pageNumber);
+                villaList = await _dbVilla.GetAllAsync(u => u.Occupancy == occupancy, pageSize: pageSize,
+                    pageNumber: pageNumber);
             else
-                villaList = await _dbVilla.GetAllAsync(pageSize:pageSize,
-                    pageNumber:pageNumber);
+                villaList = await _dbVilla.GetAllAsync(pageSize: pageSize,
+                    pageNumber: pageNumber);
 
             if (!string.IsNullOrEmpty(search))
                 villaList = villaList.Where(u => u.Name.ToLower().Contains(search));

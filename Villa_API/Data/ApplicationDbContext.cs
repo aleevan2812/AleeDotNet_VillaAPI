@@ -25,7 +25,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Royal Villa",
                 Details =
                     "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
-                ImageUrl = "https://dotnetmastery.com/bluevillaimages/villa3.jpg",
+                ImageUrl = "https://placehold.co/600x401",
                 Occupancy = 4,
                 Rate = 200,
                 Sqft = 550,
@@ -38,7 +38,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Premium Pool Villa",
                 Details =
                     "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
-                ImageUrl = "https://dotnetmastery.com/bluevillaimages/villa1.jpg",
+                ImageUrl = "https://placehold.co/600x402",
                 Occupancy = 4,
                 Rate = 300,
                 Sqft = 550,
@@ -51,7 +51,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Luxury Pool Villa",
                 Details =
                     "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
-                ImageUrl = "https://dotnetmastery.com/bluevillaimages/villa4.jpg",
+                ImageUrl = "https://placehold.co/600x403",
                 Occupancy = 4,
                 Rate = 400,
                 Sqft = 750,
@@ -64,7 +64,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Diamond Villa",
                 Details =
                     "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
-                ImageUrl = "https://dotnetmastery.com/bluevillaimages/villa5.jpg",
+                ImageUrl = "https://placehold.co/600x404",
                 Occupancy = 4,
                 Rate = 550,
                 Sqft = 900,
@@ -77,7 +77,7 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
                 Name = "Diamond Pool Villa",
                 Details =
                     "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
-                ImageUrl = "https://dotnetmastery.com/bluevillaimages/villa2.jpg",
+                ImageUrl = "https://placehold.co/600x405",
                 Occupancy = 4,
                 Rate = 600,
                 Sqft = 1100,
