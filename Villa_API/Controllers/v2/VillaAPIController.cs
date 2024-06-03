@@ -214,8 +214,8 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [HttpDelete("{id:int}", Name = "DeleteVilla")]
-    public async Task<ActionResult<APIResponse>>
-        DeleteVilla(int id) // use IActionResult since don't need to define return TYPE
+    // use IActionResult since don't need to define return TYPE
+    public async Task<ActionResult<APIResponse>> DeleteVilla(int id)
     {
         // if (id == 0)
         //     return BadRequest();
@@ -232,6 +232,17 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 
             var villa = await _dbVilla.GetAsync(u => u.Id == id);
             if (villa == null) return NotFound();
+
+            if (!string.IsNullOrEmpty(villa.ImageLocalPath))
+            {
+                var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), villa.ImageLocalPath);
+                FileInfo file = new FileInfo(oldFilePathDirectory);
+
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+            }
 
             await _dbVilla.RemoveAsync(villa);
             _response.StatusCode = HttpStatusCode.NoContent;
@@ -253,7 +264,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
-    public async Task<ActionResult<APIResponse>> UpdateVilla(int id, [FromBody] VillaUpdateDTO updateDTO)
+    public async Task<ActionResult<APIResponse>> UpdateVilla(int id, [FromForm] VillaUpdateDTO updateDTO)
     {
         try
         {
@@ -277,6 +288,40 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
             //     Amenity = updateDTO.Amenity
             // };
             var villa = _mapper.Map<Villa>(updateDTO);
+
+            if (updateDTO.Image != null)
+            {
+                if (!string.IsNullOrEmpty(villa.ImageLocalPath))
+                {
+                    var oldFilePathDirectory = Path.Combine(Directory.GetCurrentDirectory(), villa.ImageLocalPath);
+                    FileInfo file = new FileInfo(oldFilePathDirectory);
+
+                    if (file.Exists)
+                    {
+                        file.Delete();
+                    }
+                }
+
+                string fileName = updateDTO.Id + Path.GetExtension(updateDTO.Image.FileName);
+                string filePath = @"wwwroot\ProductImage\" + fileName;
+
+                var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+
+                using (var fileStream = new FileStream(directoryLocation, FileMode.Create))
+                {
+                    updateDTO.Image.CopyTo(fileStream);
+                }
+
+                var baseUrl =
+                    $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                villa.ImageUrl = baseUrl + "/ProductImage/" + fileName;
+                villa.ImageLocalPath = filePath;
+            }
+            else
+            {
+                villa.ImageUrl = "https://placehold.co/600x400";
+            }
+
 
             await _dbVilla.UpdateAsync(villa);
             await _dbVilla.SaveAsync();
