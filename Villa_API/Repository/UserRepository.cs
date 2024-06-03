@@ -37,7 +37,7 @@ public class UserRepository : IUserRepository
         return false;
     }
 
-    public async Task<LoginResponseDTO> Login(LoginRequestDTO loginRequestDTO)
+    public async Task<TokenDTO> Login(LoginRequestDTO loginRequestDTO)
     {
         // var user = _db.LocalUsers.FirstOrDefault(u => u.UserName.ToLower() == loginRequestDTO.UserName.ToLower()
         //                                               && u.Password == loginRequestDTO.Password);
@@ -46,10 +46,9 @@ public class UserRepository : IUserRepository
 
         bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDTO.Password);
         if (user == null || isValid == false)
-            return new LoginResponseDTO
+            return new TokenDTO
             {
                 Token = "",
-                User = null
             };
 
         var roles = await _userManager.GetRolesAsync(user);
@@ -76,14 +75,13 @@ public class UserRepository : IUserRepository
         // Tạo JWT token
         var token = tokenHandler.CreateToken(tokenDescriptor);
         // Tạo đối tượng LoginResponseDTO chứa token và thông tin người dùng, sau đó trả về đối tượng này.
-        LoginResponseDTO loginResponseDTO = new LoginResponseDTO
+        TokenDTO tokenDto = new TokenDTO
         {
             // Viết token thành chuỗi (tokenHandler.WriteToken(token)).
             Token = tokenHandler.WriteToken(token),
-            User = _mapper.Map<UserDTO>(user)
             // Role = roles.FirstOrDefault()
         };
-        return loginResponseDTO;
+        return tokenDto;
     }
 
     public async Task<UserDTO> Register(RegisterationRequestDTO registerationRequestDTO)
@@ -99,9 +97,11 @@ public class UserRepository : IUserRepository
             var result = await _userManager.CreateAsync(user, registerationRequestDTO.Password);
             if (result.Succeeded)
             {
-                if (!_roleManager.RoleExistsAsync(registerationRequestDTO.Role).GetAwaiter().GetResult()){
+                if (!_roleManager.RoleExistsAsync(registerationRequestDTO.Role).GetAwaiter().GetResult())
+                {
                     await _roleManager.CreateAsync(new IdentityRole(registerationRequestDTO.Role));
                 }
+
                 await _userManager.AddToRoleAsync(user, registerationRequestDTO.Role);
                 var userToReturn = _db.ApplicationUsers
                     .FirstOrDefault(u => u.UserName == registerationRequestDTO.UserName);
