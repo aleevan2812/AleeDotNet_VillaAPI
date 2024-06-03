@@ -161,6 +161,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseStaticFiles(); // render wwwroot
+
 app.UseHttpsRedirection();
 
 app.UseAuthentication();
