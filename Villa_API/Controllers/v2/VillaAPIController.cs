@@ -39,7 +39,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
 
     [HttpGet] // fix err: Failed to load API definition
     // [ResponseCache(Duration =30)]
-    [ResponseCache(CacheProfileName = "Default30")]
+    // [ResponseCache(CacheProfileName = "Default30")]
     [ProducesResponseType(StatusCodes.Status403Forbidden)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -123,7 +123,7 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<ActionResult<APIResponse>> CreateVilla([FromBody] VillaCreateDTO createDTO)
+    public async Task<ActionResult<APIResponse>> CreateVilla([FromForm] VillaCreateDTO createDTO)
     {
         // The [ApiController] attribute makes model validation errors automatically trigger an HTTP 400 response. Consequently, the following code is unnecessary
         // if (!ModelState.IsValid)
@@ -157,6 +157,41 @@ public class VillaAPIController : ControllerBase // dont need Controller Class
             Villa model = _mapper.Map<Villa>(createDTO);
 
             await _dbVilla.CreateAsync(model);
+
+            if (createDTO.Image != null)
+            {
+                string fileName = model.Id + Path.GetExtension(createDTO.Image.FileName);
+                string filePath = @"wwwroot\ProductImage\" + fileName;
+
+                var directoryLocation = Path.Combine(Directory.GetCurrentDirectory(), filePath);
+
+                FileInfo file = new FileInfo(directoryLocation);
+
+                if (file.Exists)
+                {
+                    file.Delete();
+                }
+
+                using (var fileStream = new FileStream(directoryLocation, FileMode.Create))
+                {
+                    createDTO.Image.CopyTo(fileStream);
+                }
+
+                // Lấy URL gốc của ứng dụng bằng cách kết hợp Scheme (HTTP/HTTPS), Host và PathBase từ HttpContext.Request.
+                var baseUrl =
+                    $"{HttpContext.Request.Scheme}://{HttpContext.Request.Host.Value}{HttpContext.Request.PathBase.Value}";
+                // model.ImageUrl: URL đầy đủ của tệp ảnh để sử dụng trên giao diện người dùng.
+                model.ImageUrl = baseUrl + "/ProductImage/" + fileName;
+                // model.ImageLocalPath: Đường dẫn tệp ảnh lưu trữ trên máy chủ.
+                model.ImageLocalPath = filePath;
+            }
+            else
+            {
+                model.ImageUrl = "https://placehold.co/600x400";
+            }
+
+            await _dbVilla.UpdateAsync(model);
+
             await _dbVilla.SaveAsync();
             _response.Result = _mapper.Map<VillaDTO>(model);
             _response.StatusCode = HttpStatusCode.Created;
