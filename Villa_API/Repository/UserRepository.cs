@@ -54,10 +54,12 @@ public class UserRepository : IUserRepository
         var jwtTokenId = $"JTI{Guid.NewGuid()}";
         var accessToken = await GetAccessToken(user, jwtTokenId);
 
+        var refreshToken = await CreateNewRefreshToken(user.Id, jwtTokenId);
         // Tạo đối tượng LoginResponseDTO chứa token và thông tin người dùng, sau đó trả về đối tượng này.
         TokenDTO tokenDto = new TokenDTO
         {
-            AccessToken = accessToken
+            AccessToken = accessToken,
+            RefreshToken = refreshToken
         };
         return tokenDto;
     }
@@ -112,7 +114,8 @@ public class UserRepository : IUserRepository
                 new(JwtRegisteredClaimNames.Sub, user.Id)
             }),
             // Expires: Thời hạn của token, ở đây là 7 ngày kể từ thời điểm tạo.
-            Expires = DateTime.UtcNow.AddDays(7),
+            // Expires = DateTime.UtcNow.AddDays(7),
+            Expires = DateTime.UtcNow.AddMinutes(60),
             // SigningCredentials: Chứa thông tin về phương thức ký token, sử dụng thuật toán HMAC SHA256 với khóa đối xứng (SymmetricSecurityKey).
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -143,5 +146,21 @@ public class UserRepository : IUserRepository
         {
             return (false, null, null);
         }
+    }
+    
+    private async Task<string> CreateNewRefreshToken(string userId, string tokenId)
+    {
+        RefreshToken refreshToken = new()
+        {
+            IsValid = true,
+            UserId = userId,
+            JwtTokenId = tokenId,
+            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            Refresh_Token = Guid.NewGuid() + "-" + Guid.NewGuid(),
+        };
+
+        await _db.RefreshTokens.AddAsync(refreshToken);
+        await _db.SaveChangesAsync();
+        return refreshToken.Refresh_Token;
     }
 }
