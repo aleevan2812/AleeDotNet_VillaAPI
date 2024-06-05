@@ -177,7 +177,7 @@ public class UserRepository : IUserRepository
             }),
             // Expires: Thời hạn của token, ở đây là 7 ngày kể từ thời điểm tạo.
             // Expires = DateTime.UtcNow.AddDays(7),
-            Expires = DateTime.UtcNow.AddMinutes(1),
+            Expires = DateTime.UtcNow.AddMinutes(3),
             // SigningCredentials: Chứa thông tin về phương thức ký token, sử dụng thuật toán HMAC SHA256 với khóa đối xứng (SymmetricSecurityKey).
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -213,7 +213,7 @@ public class UserRepository : IUserRepository
             UserId = userId,
             JwtTokenId = tokenId,
             // ExpiresAt = DateTime.UtcNow.AddDays(30),
-            ExpiresAt = DateTime.UtcNow.AddMinutes(3),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(5),
             Refresh_Token = Guid.NewGuid() + "-" + Guid.NewGuid()
         };
 
