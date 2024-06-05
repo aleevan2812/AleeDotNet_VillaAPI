@@ -115,13 +115,15 @@ public class UserRepository : IUserRepository
         /*When someone tries to use not valid refresh token, fraud possible*/
         if (!existingRefreshToken.IsValid)
         {
-            var chainRecords = _db.RefreshTokens.Where(u => u.UserId == existingRefreshToken.UserId
-                                                            && u.JwtTokenId == existingRefreshToken.JwtTokenId);
+            // .NET 8
+            var chainRecords = await _db.RefreshTokens.Where(u => u.UserId == existingRefreshToken.UserId
+                                                                  && u.JwtTokenId == existingRefreshToken.JwtTokenId)
+                .ExecuteUpdateAsync(u => u.SetProperty(refreshToken => refreshToken.IsValid, false));
 
-            foreach (var item in chainRecords) item.IsValid = false;
-
-            _db.UpdateRange(chainRecords);
-            _db.SaveChanges();
+            // .NET 7
+            // foreach (var item in chainRecords) item.IsValid = false; 
+            // _db.UpdateRange(chainRecords);
+            // _db.SaveChanges();
             return new TokenDTO();
         }
 
