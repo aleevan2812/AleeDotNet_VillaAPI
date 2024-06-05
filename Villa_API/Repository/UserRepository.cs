@@ -95,6 +95,65 @@ public class UserRepository : IUserRepository
         return null;
     }
 
+    public async Task<TokenDTO> RefreshAccessToken(TokenDTO tokenDTO)
+    {
+        /*Find an existing refresh token*/
+        var existingRefreshToken =
+            await _db.RefreshTokens.FirstOrDefaultAsync(u => u.Refresh_Token == tokenDTO.RefreshToken);
+        if (existingRefreshToken == null) return new TokenDTO();
+
+        /*Compare data from existing refresh and access token provided and if there is any missmatch then consider it as a fraud*/
+        var accessTokenData = GetAccessTokenData(tokenDTO.AccessToken);
+        if (!accessTokenData.isSuccessful || accessTokenData.userId != existingRefreshToken.UserId
+                                          || accessTokenData.tokenId != existingRefreshToken.JwtTokenId)
+        {
+            existingRefreshToken.IsValid = false;
+            _db.SaveChanges();
+            return new TokenDTO();
+        }
+
+        /*When someone tries to use not valid refresh token, fraud possible*/
+        if (!existingRefreshToken.IsValid)
+        {
+            var chainRecords = _db.RefreshTokens.Where(u => u.UserId == existingRefreshToken.UserId
+                                                            && u.JwtTokenId == existingRefreshToken.JwtTokenId);
+
+            foreach (var item in chainRecords) item.IsValid = false;
+
+            _db.UpdateRange(chainRecords);
+            _db.SaveChanges();
+            return new TokenDTO();
+        }
+
+        /*If just expired then mark as invalid and return empty*/
+        if (existingRefreshToken.ExpiresAt < DateTime.UtcNow)
+        {
+            existingRefreshToken.IsValid = false;
+            _db.SaveChanges();
+            return new TokenDTO();
+        }
+
+        /*replace old refresh with a new one with updated expire date*/
+        var newRefreshToken = await CreateNewRefreshToken(existingRefreshToken.UserId, existingRefreshToken.JwtTokenId);
+
+        /*revoke existing refresh token*/
+        existingRefreshToken.IsValid = false;
+        _db.SaveChanges();
+
+        /*generate new access token*/
+        var applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == existingRefreshToken.UserId);
+        if (applicationUser == null)
+            return new TokenDTO();
+
+        var newAccessToken = await GetAccessToken(applicationUser, existingRefreshToken.JwtTokenId);
+
+        return new TokenDTO
+        {
+            AccessToken = newAccessToken,
+            RefreshToken = newRefreshToken
+        };
+    }
+
 
     public async Task<string> GetAccessToken(ApplicationUser user, string jwtTokenId)
     {
@@ -128,57 +187,6 @@ public class UserRepository : IUserRepository
         return tokenStr;
     }
 
-    public async Task<TokenDTO> RefreshAccessToken(TokenDTO tokenDTO)
-    {
-        /*Find an existing refresh token*/
-        var existingRefreshToken =
-            await _db.RefreshTokens.FirstOrDefaultAsync(u => u.Refresh_Token == tokenDTO.RefreshToken);
-        if (existingRefreshToken == null)
-        {
-            return new TokenDTO();
-        }
-
-        /*Compare data from existing refresh and access token provided and if there is any missmatch then consider it as a fraud*/
-        var accessTokenData = GetAccessTokenData(tokenDTO.AccessToken);
-        if (!accessTokenData.isSuccessful || accessTokenData.userId != existingRefreshToken.UserId
-                                          || accessTokenData.tokenId != existingRefreshToken.JwtTokenId)
-        {
-            existingRefreshToken.IsValid = false;
-            _db.SaveChanges();
-            return new TokenDTO();
-        }
-
-        /*When someone tries to use not valid refresh token, fraud possible*/
-
-        /*If just expired then mark as invalid and return empty*/
-        if (existingRefreshToken.ExpiresAt < DateTime.UtcNow)
-        {
-            existingRefreshToken.IsValid = false;
-            _db.SaveChanges();
-            return new TokenDTO();
-        }
-
-        /*replace old refresh with a new one with updated expire date*/
-        var newRefreshToken = await CreateNewRefreshToken(existingRefreshToken.UserId, existingRefreshToken.JwtTokenId);
-
-        /*revoke existing refresh token*/
-        existingRefreshToken.IsValid = false;
-        _db.SaveChanges();
-
-        /*generate new access token*/
-        var applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == existingRefreshToken.UserId);
-        if (applicationUser == null)
-            return new TokenDTO();
-
-        var newAccessToken = await GetAccessToken(applicationUser, existingRefreshToken.JwtTokenId);
-
-        return new TokenDTO()
-        {
-            AccessToken = newAccessToken,
-            RefreshToken = newRefreshToken,
-        };
-    }
-
     private (bool isSuccessful, string userId, string tokenId) GetAccessTokenData(string accessToken)
     {
         try
@@ -204,7 +212,7 @@ public class UserRepository : IUserRepository
             JwtTokenId = tokenId,
             // ExpiresAt = DateTime.UtcNow.AddDays(30),
             ExpiresAt = DateTime.UtcNow.AddMinutes(3),
-            Refresh_Token = Guid.NewGuid() + "-" + Guid.NewGuid(),
+            Refresh_Token = Guid.NewGuid() + "-" + Guid.NewGuid()
         };
 
         await _db.RefreshTokens.AddAsync(refreshToken);
