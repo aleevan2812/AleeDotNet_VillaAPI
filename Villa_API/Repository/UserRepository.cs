@@ -53,7 +53,7 @@ public class UserRepository : IUserRepository
 
         var accessToken = await GetAccessToken(user);
 
-        
+
         // Tạo đối tượng LoginResponseDTO chứa token và thông tin người dùng, sau đó trả về đối tượng này.
         TokenDTO tokenDto = new TokenDTO
         {
@@ -116,10 +116,15 @@ public class UserRepository : IUserRepository
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
         };
-        
+
         // Tạo JWT token
         var token = tokenHandler.CreateToken(tokenDescriptor);
         var tokenStr = tokenHandler.WriteToken(token);
         return tokenStr;
+    }
+
+    public Task<TokenDTO> RefreshAccessToken(TokenDTO tokenDTO)
+    {
+        throw new NotImplementedException();
     }
 }
