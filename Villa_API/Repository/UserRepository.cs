@@ -116,7 +116,7 @@ public class UserRepository : IUserRepository
             }),
             // Expires: Thời hạn của token, ở đây là 7 ngày kể từ thời điểm tạo.
             // Expires = DateTime.UtcNow.AddDays(7),
-            Expires = DateTime.UtcNow.AddMinutes(60),
+            Expires = DateTime.UtcNow.AddMinutes(1),
             // SigningCredentials: Chứa thông tin về phương thức ký token, sử dụng thuật toán HMAC SHA256 với khóa đối xứng (SymmetricSecurityKey).
             SigningCredentials =
                 new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
@@ -145,6 +145,7 @@ public class UserRepository : IUserRepository
         {
             existingRefreshToken.IsValid = false;
             _db.SaveChanges();
+            return new TokenDTO();
         }
 
         /*When someone tries to use not valid refresh token, fraud possible*/
@@ -154,6 +155,7 @@ public class UserRepository : IUserRepository
         {
             existingRefreshToken.IsValid = false;
             _db.SaveChanges();
+            return new TokenDTO();
         }
 
         /*replace old refresh with a new one with updated expire date*/
@@ -162,7 +164,7 @@ public class UserRepository : IUserRepository
         /*revoke existing refresh token*/
         existingRefreshToken.IsValid = false;
         _db.SaveChanges();
-        
+
         /*generate new access token*/
         var applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == existingRefreshToken.UserId);
         if (applicationUser == null)
@@ -200,7 +202,8 @@ public class UserRepository : IUserRepository
             IsValid = true,
             UserId = userId,
             JwtTokenId = tokenId,
-            ExpiresAt = DateTime.UtcNow.AddDays(30),
+            // ExpiresAt = DateTime.UtcNow.AddDays(30),
+            ExpiresAt = DateTime.UtcNow.AddMinutes(3),
             Refresh_Token = Guid.NewGuid() + "-" + Guid.NewGuid(),
         };
 
