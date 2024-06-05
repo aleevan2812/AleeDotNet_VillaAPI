@@ -15,8 +15,8 @@ public class UserRepository : IUserRepository
 {
     private readonly ApplicationDbContext _db;
     private readonly IMapper _mapper;
-    private readonly UserManager<ApplicationUser> _userManager;
     private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly UserManager<ApplicationUser> _userManager;
     private readonly string secretKey;
 
     public UserRepository(ApplicationDbContext db, IConfiguration configuration,
@@ -48,16 +48,16 @@ public class UserRepository : IUserRepository
         if (user == null || isValid == false)
             return new TokenDTO
             {
-                AccessToken = "",
+                AccessToken = ""
             };
 
-        var accessToken = await GetAccessToken(user);
-
+        var jwtTokenId = $"JTI{Guid.NewGuid()}";
+        var accessToken = await GetAccessToken(user, jwtTokenId);
 
         // Tạo đối tượng LoginResponseDTO chứa token và thông tin người dùng, sau đó trả về đối tượng này.
         TokenDTO tokenDto = new TokenDTO
         {
-            AccessToken = accessToken,
+            AccessToken = accessToken
         };
         return tokenDto;
     }
@@ -76,9 +76,7 @@ public class UserRepository : IUserRepository
             if (result.Succeeded)
             {
                 if (!_roleManager.RoleExistsAsync(registerationRequestDTO.Role).GetAwaiter().GetResult())
-                {
                     await _roleManager.CreateAsync(new IdentityRole(registerationRequestDTO.Role));
-                }
 
                 await _userManager.AddToRoleAsync(user, registerationRequestDTO.Role);
                 var userToReturn = _db.ApplicationUsers
@@ -94,7 +92,8 @@ public class UserRepository : IUserRepository
         return null;
     }
 
-    public async Task<string> GetAccessToken(ApplicationUser user)
+
+    public async Task<string> GetAccessToken(ApplicationUser user, string jwtTokenId)
     {
         var roles = await _userManager.GetRolesAsync(user);
         /* if user was found generate JWT Token */
@@ -108,7 +107,9 @@ public class UserRepository : IUserRepository
             Subject = new ClaimsIdentity(new Claim[]
             {
                 new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.Role, roles.FirstOrDefault())
+                new(ClaimTypes.Role, roles.FirstOrDefault()),
+                new(JwtRegisteredClaimNames.Jti, jwtTokenId),
+                new(JwtRegisteredClaimNames.Sub, user.Id)
             }),
             // Expires: Thời hạn của token, ở đây là 7 ngày kể từ thời điểm tạo.
             Expires = DateTime.UtcNow.AddDays(7),
@@ -122,9 +123,25 @@ public class UserRepository : IUserRepository
         var tokenStr = tokenHandler.WriteToken(token);
         return tokenStr;
     }
-
     public Task<TokenDTO> RefreshAccessToken(TokenDTO tokenDTO)
     {
         throw new NotImplementedException();
+    }
+    
+    private (bool isSuccessful, string userId, string tokenId) GetAccessTokenData(string accessToken)
+    {
+        try
+        {
+            var tokenHandler = new JwtSecurityTokenHandler();
+            var jwt = tokenHandler.ReadJwtToken(accessToken);
+            var jwtTokenId = jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Jti).Value;
+            var userId = jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub).Value;
+            return (true, userId, jwtTokenId);
+
+        }
+        catch
+        {
+            return (false, null, null);
+        }
     }
 }
