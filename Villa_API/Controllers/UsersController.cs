@@ -84,11 +84,25 @@ public class UsersController : Controller
             _response.Result = tokenDTOResponse;
             return Ok(_response);
         }
-        else
+
+        _response.IsSuccess = false;
+        _response.Result = "Invalid Input";
+        return BadRequest(_response);
+    }
+
+    [HttpPost("revoke")]
+    public async Task<IActionResult> RevokeRefreshToken([FromBody] TokenDTO tokenDTO)
+    {
+        if (ModelState.IsValid)
         {
-            _response.IsSuccess = false;
-            _response.Result = "Invalid Input";
-            return BadRequest(_response);
+            await _userRepo.RevokeRefreshToken(tokenDTO);
+            _response.IsSuccess = true;
+            _response.StatusCode = HttpStatusCode.OK;
+            return Ok(_response);
         }
+
+        _response.IsSuccess = false;
+        _response.Result = "Invalid Input";
+        return BadRequest(_response);
     }
 }
