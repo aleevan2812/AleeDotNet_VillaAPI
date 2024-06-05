@@ -51,35 +51,13 @@ public class UserRepository : IUserRepository
                 AccessToken = "",
             };
 
-        var roles = await _userManager.GetRolesAsync(user);
-        /* if user was found generate JWT Token */
-        var tokenHandler = new JwtSecurityTokenHandler();
-        // secretKey là khóa bí mật dùng để ký JWT token, được mã hóa thành byte array
-        var key = Encoding.ASCII.GetBytes(secretKey);
+        var accessToken = await GetAccessToken(user);
 
-        var tokenDescriptor = new SecurityTokenDescriptor
-        {
-            // Subject: Chứa các thông tin xác nhận (claims) về người dùng,
-            Subject = new ClaimsIdentity(new Claim[]
-            {
-                new(ClaimTypes.Name, user.UserName),
-                new(ClaimTypes.Role, roles.FirstOrDefault())
-            }),
-            // Expires: Thời hạn của token, ở đây là 7 ngày kể từ thời điểm tạo.
-            Expires = DateTime.UtcNow.AddDays(7),
-            // SigningCredentials: Chứa thông tin về phương thức ký token, sử dụng thuật toán HMAC SHA256 với khóa đối xứng (SymmetricSecurityKey).
-            SigningCredentials =
-                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
-        };
-
-        // Tạo JWT token
-        var token = tokenHandler.CreateToken(tokenDescriptor);
+        
         // Tạo đối tượng LoginResponseDTO chứa token và thông tin người dùng, sau đó trả về đối tượng này.
         TokenDTO tokenDto = new TokenDTO
         {
-            // Viết token thành chuỗi (tokenHandler.WriteToken(token)).
-            AccessToken = tokenHandler.WriteToken(token),
-            // Role = roles.FirstOrDefault()
+            AccessToken = accessToken,
         };
         return tokenDto;
     }
@@ -114,5 +92,34 @@ public class UserRepository : IUserRepository
 
         // return new UserDTO();
         return null;
+    }
+
+    public async Task<string> GetAccessToken(ApplicationUser user)
+    {
+        var roles = await _userManager.GetRolesAsync(user);
+        /* if user was found generate JWT Token */
+        var tokenHandler = new JwtSecurityTokenHandler();
+        // secretKey là khóa bí mật dùng để ký JWT token, được mã hóa thành byte array
+        var key = Encoding.ASCII.GetBytes(secretKey);
+
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            // Subject: Chứa các thông tin xác nhận (claims) về người dùng,
+            Subject = new ClaimsIdentity(new Claim[]
+            {
+                new(ClaimTypes.Name, user.UserName),
+                new(ClaimTypes.Role, roles.FirstOrDefault())
+            }),
+            // Expires: Thời hạn của token, ở đây là 7 ngày kể từ thời điểm tạo.
+            Expires = DateTime.UtcNow.AddDays(7),
+            // SigningCredentials: Chứa thông tin về phương thức ký token, sử dụng thuật toán HMAC SHA256 với khóa đối xứng (SymmetricSecurityKey).
+            SigningCredentials =
+                new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
+        };
+        
+        // Tạo JWT token
+        var token = tokenHandler.CreateToken(tokenDescriptor);
+        var tokenStr = tokenHandler.WriteToken(token);
+        return tokenStr;
     }
 }
