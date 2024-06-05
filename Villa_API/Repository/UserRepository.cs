@@ -103,35 +103,25 @@ public class UserRepository : IUserRepository
         if (existingRefreshToken == null) return new TokenDTO();
 
         /*Compare data from existing refresh and access token provided and if there is any missmatch then consider it as a fraud*/
-        var accessTokenData = GetAccessTokenData(tokenDTO.AccessToken);
-        if (!accessTokenData.isSuccessful || accessTokenData.userId != existingRefreshToken.UserId
-                                          || accessTokenData.tokenId != existingRefreshToken.JwtTokenId)
+        var isTokenValid = GetAccessTokenData(tokenDTO.AccessToken, existingRefreshToken.UserId,
+            existingRefreshToken.JwtTokenId);
+        if (!isTokenValid)
         {
-            existingRefreshToken.IsValid = false;
-            _db.SaveChanges();
+            await MarkTokenAsInvalid(existingRefreshToken);
             return new TokenDTO();
         }
 
         /*When someone tries to use not valid refresh token, fraud possible*/
         if (!existingRefreshToken.IsValid)
         {
-            // .NET 8
-            var chainRecords = await _db.RefreshTokens.Where(u => u.UserId == existingRefreshToken.UserId
-                                                                  && u.JwtTokenId == existingRefreshToken.JwtTokenId)
-                .ExecuteUpdateAsync(u => u.SetProperty(refreshToken => refreshToken.IsValid, false));
-
-            // .NET 7
-            // foreach (var item in chainRecords) item.IsValid = false; 
-            // _db.UpdateRange(chainRecords);
-            // _db.SaveChanges();
+            await MarkAllTokenInChainAsInvalid(existingRefreshToken.UserId, existingRefreshToken.JwtTokenId);
             return new TokenDTO();
         }
 
         /*If just expired then mark as invalid and return empty*/
         if (existingRefreshToken.ExpiresAt < DateTime.UtcNow)
         {
-            existingRefreshToken.IsValid = false;
-            _db.SaveChanges();
+            await MarkTokenAsInvalid(existingRefreshToken);
             return new TokenDTO();
         }
 
@@ -139,8 +129,7 @@ public class UserRepository : IUserRepository
         var newRefreshToken = await CreateNewRefreshToken(existingRefreshToken.UserId, existingRefreshToken.JwtTokenId);
 
         /*revoke existing refresh token*/
-        existingRefreshToken.IsValid = false;
-        _db.SaveChanges();
+        await MarkTokenAsInvalid(existingRefreshToken);
 
         /*generate new access token*/
         var applicationUser = _db.ApplicationUsers.FirstOrDefault(u => u.Id == existingRefreshToken.UserId);
@@ -189,7 +178,7 @@ public class UserRepository : IUserRepository
         return tokenStr;
     }
 
-    private (bool isSuccessful, string userId, string tokenId) GetAccessTokenData(string accessToken)
+    private bool GetAccessTokenData(string accessToken, string expectedUserId, string expectedTokenId)
     {
         try
         {
@@ -197,11 +186,11 @@ public class UserRepository : IUserRepository
             var jwt = tokenHandler.ReadJwtToken(accessToken);
             var jwtTokenId = jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Jti).Value;
             var userId = jwt.Claims.FirstOrDefault(u => u.Type == JwtRegisteredClaimNames.Sub).Value;
-            return (true, userId, jwtTokenId);
+            return userId == expectedUserId && jwtTokenId == expectedTokenId;
         }
         catch
         {
-            return (false, null, null);
+            return false;
         }
     }
 
@@ -220,5 +209,18 @@ public class UserRepository : IUserRepository
         await _db.RefreshTokens.AddAsync(refreshToken);
         await _db.SaveChangesAsync();
         return refreshToken.Refresh_Token;
+    }
+
+    private async Task MarkAllTokenInChainAsInvalid(string userId, string tokenId)
+    {
+        await _db.RefreshTokens.Where(u => u.UserId == userId
+                                           && u.JwtTokenId == tokenId)
+            .ExecuteUpdateAsync(u => u.SetProperty(refreshToken => refreshToken.IsValid, false));
+    }
+
+    private Task MarkTokenAsInvalid(RefreshToken refreshToken)
+    {
+        refreshToken.IsValid = false;
+        return _db.SaveChangesAsync();
     }
 }
