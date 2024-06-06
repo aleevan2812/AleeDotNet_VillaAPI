@@ -324,7 +324,7 @@ namespace Villa_API.Migrations
                         {
                             Id = 1,
                             Amenity = "",
-                            CreatedDate = new DateTime(2024, 6, 5, 11, 21, 51, 23, DateTimeKind.Local).AddTicks(8126),
+                            CreatedDate = new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6908),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://placehold.co/600x401",
                             Name = "Royal Villa",
@@ -337,7 +337,7 @@ namespace Villa_API.Migrations
                         {
                             Id = 2,
                             Amenity = "",
-                            CreatedDate = new DateTime(2024, 6, 5, 11, 21, 51, 23, DateTimeKind.Local).AddTicks(8139),
+                            CreatedDate = new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6924),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://placehold.co/600x402",
                             Name = "Premium Pool Villa",
@@ -350,7 +350,7 @@ namespace Villa_API.Migrations
                         {
                             Id = 3,
                             Amenity = "",
-                            CreatedDate = new DateTime(2024, 6, 5, 11, 21, 51, 23, DateTimeKind.Local).AddTicks(8141),
+                            CreatedDate = new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6926),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://placehold.co/600x403",
                             Name = "Luxury Pool Villa",
@@ -363,7 +363,7 @@ namespace Villa_API.Migrations
                         {
                             Id = 4,
                             Amenity = "",
-                            CreatedDate = new DateTime(2024, 6, 5, 11, 21, 51, 23, DateTimeKind.Local).AddTicks(8142),
+                            CreatedDate = new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6927),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://placehold.co/600x404",
                             Name = "Diamond Villa",
@@ -376,7 +376,7 @@ namespace Villa_API.Migrations
                         {
                             Id = 5,
                             Amenity = "",
-                            CreatedDate = new DateTime(2024, 6, 5, 11, 21, 51, 23, DateTimeKind.Local).AddTicks(8144),
+                            CreatedDate = new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6929),
                             Details = "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.",
                             ImageUrl = "https://placehold.co/600x405",
                             Name = "Diamond Pool Villa",

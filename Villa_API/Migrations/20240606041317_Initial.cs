@@ -70,6 +70,23 @@ namespace Villa_API.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "RefreshTokens",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    JwtTokenId = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    Refresh_Token = table.Column<string>(type: "nvarchar(max)", nullable: true),
+                    IsValid = table.Column<bool>(type: "bit", nullable: false),
+                    ExpiresAt = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_RefreshTokens", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "Villas",
                 columns: table => new
                 {
@@ -223,11 +240,11 @@ namespace Villa_API.Migrations
                 columns: new[] { "Id", "Amenity", "CreatedDate", "Details", "ImageLocalPath", "ImageUrl", "Name", "Occupancy", "Rate", "Sqft", "UpdatedDate" },
                 values: new object[,]
                 {
-                    { 1, "", new DateTime(2024, 6, 3, 14, 56, 6, 874, DateTimeKind.Local).AddTicks(1324), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x401", "Royal Villa", 4, 200.0, 550, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 2, "", new DateTime(2024, 6, 3, 14, 56, 6, 874, DateTimeKind.Local).AddTicks(1344), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x402", "Premium Pool Villa", 4, 300.0, 550, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 3, "", new DateTime(2024, 6, 3, 14, 56, 6, 874, DateTimeKind.Local).AddTicks(1346), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x403", "Luxury Pool Villa", 4, 400.0, 750, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 4, "", new DateTime(2024, 6, 3, 14, 56, 6, 874, DateTimeKind.Local).AddTicks(1349), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x404", "Diamond Villa", 4, 550.0, 900, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
-                    { 5, "", new DateTime(2024, 6, 3, 14, 56, 6, 874, DateTimeKind.Local).AddTicks(1351), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x405", "Diamond Pool Villa", 4, 600.0, 1100, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
+                    { 1, "", new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6908), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x401", "Royal Villa", 4, 200.0, 550, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 2, "", new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6924), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x402", "Premium Pool Villa", 4, 300.0, 550, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 3, "", new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6926), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x403", "Luxury Pool Villa", 4, 400.0, 750, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 4, "", new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6927), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x404", "Diamond Villa", 4, 550.0, 900, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) },
+                    { 5, "", new DateTime(2024, 6, 6, 11, 13, 16, 800, DateTimeKind.Local).AddTicks(6929), "Fusce 11 tincidunt maximus leo, sed scelerisque massa auctor sit amet. Donec ex mauris, hendrerit quis nibh ac, efficitur fringilla enim.", null, "https://placehold.co/600x405", "Diamond Pool Villa", 4, 600.0, 1100, new DateTime(1, 1, 1, 0, 0, 0, 0, DateTimeKind.Unspecified) }
                 });
 
             migrationBuilder.CreateIndex(
@@ -295,6 +312,9 @@ namespace Villa_API.Migrations
 
             migrationBuilder.DropTable(
                 name: "LocalUsers");
+
+            migrationBuilder.DropTable(
+                name: "RefreshTokens");
 
             migrationBuilder.DropTable(
                 name: "VillaNumbers");
