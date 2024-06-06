@@ -9,6 +9,7 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Villa_API;
 using Villa_API.Data;
+using Villa_API.Filters;
 using Villa_API.Models;
 using Villa_API.Repository;
 using Villa_API.Repository.IRepository;
@@ -84,6 +85,8 @@ builder.Services.AddControllers(option =>
 
     // option.ReturnHttpNotAcceptable = true;
     // if a format is not acceptable, return the appropriate error message
+    
+    option.Filters.Add<CustomExceptionFilter>();
 }).AddNewtonsoftJson().AddXmlDataContractSerializerFormatters();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
