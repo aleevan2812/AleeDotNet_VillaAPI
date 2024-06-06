@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Mvc.ApiExplorer;
 using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 using Swashbuckle.AspNetCore.SwaggerGen;
@@ -6,7 +7,13 @@ namespace Villa_API;
 
 public class AleeConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
 {
+    private readonly IApiVersionDescriptionProvider provider;
     private IConfigureOptions<SwaggerGenOptions> _configureOptionsImplementation;
+
+    public AleeConfigureSwaggerOptions(IApiVersionDescriptionProvider provider)
+    {
+        this.provider = provider;
+    }
 
     public void Configure(SwaggerGenOptions options)
     {
@@ -38,39 +45,23 @@ public class AleeConfigureSwaggerOptions : IConfigureOptions<SwaggerGenOptions>
             }
         });
 
-        options.SwaggerDoc("v1", new OpenApiInfo
-        {
-            Version = "v1.0",
-            Title = "Alee Villa",
-            Description = "API to manage Villa",
-            TermsOfService = new Uri("https://example.com/terms"),
-            Contact = new OpenApiContact
+        foreach (var desc in provider.ApiVersionDescriptions)
+            options.SwaggerDoc(desc.GroupName, new OpenApiInfo
             {
-                Name = "Alee-Contact",
-                Url = new Uri("https://contact.com")
-            },
-            License = new OpenApiLicense
-            {
-                Name = "Example License",
-                Url = new Uri("https://example.com/license")
-            }
-        });
-        options.SwaggerDoc("v2", new OpenApiInfo
-        {
-            Version = "v2",
-            Title = "Alee Villa",
-            Description = "API to manage Villa",
-            TermsOfService = new Uri("https://example.com/terms"),
-            Contact = new OpenApiContact
-            {
-                Name = "Alee-Contact",
-                Url = new Uri("https://contact.com")
-            },
-            License = new OpenApiLicense
-            {
-                Name = "Example License",
-                Url = new Uri("https://example.com/license")
-            }
-        });
+                Version = desc.ApiVersion.ToString(),
+                Title = $"Alee Villa {desc.ApiVersion}",
+                Description = "API to manage Villa",
+                TermsOfService = new Uri("https://example.com/terms"),
+                Contact = new OpenApiContact
+                {
+                    Name = "Alee-Contact",
+                    Url = new Uri("https://contact.com")
+                },
+                License = new OpenApiLicense
+                {
+                    Name = "Example License",
+                    Url = new Uri("https://example.com/license")
+                }
+            });
     }
 }
