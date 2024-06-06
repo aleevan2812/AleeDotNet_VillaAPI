@@ -9,8 +9,8 @@ using Microsoft.IdentityModel.Tokens;
 using Swashbuckle.AspNetCore.SwaggerGen;
 using Villa_API;
 using Villa_API.Data;
-using Villa_API.Extensions;
 using Villa_API.Filters;
+using Villa_API.Middlewares;
 using Villa_API.Models;
 using Villa_API.Repository;
 using Villa_API.Repository.IRepository;
@@ -116,7 +116,9 @@ if (app.Environment.IsDevelopment())
 }
 
 // app.UseExceptionHandler("/ErrorHandling/ProcessError");
-app.HandleError(app.Environment.IsDevelopment());
+// app.HandleError(app.Environment.IsDevelopment());
+app.UseMiddleware<CustomExceptionMiddleware>();
+
 app.UseStaticFiles(); // render wwwroot
 
 app.UseHttpsRedirection();
